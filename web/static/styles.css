@@ -1,0 +1,255 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, sans-serif;
+  color: #243732;
+  background: #f4f6f3;
+  line-height: 1.5;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header {
+  padding: 1.25rem max(1rem, calc((100% - 1100px) / 2));
+  background: #fff;
+  border-bottom: 1px solid #dce3de;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+a {
+  color: #216b53;
+  text-underline-offset: 0.2em;
+}
+.brand {
+  font-size: 1.25rem;
+  font-weight: 750;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.brand span {
+  font-weight: 400;
+  color: #667970;
+}
+.lan,
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  color: #667970;
+}
+main {
+  max-width: 1132px;
+  margin: auto;
+  padding: 1.5rem 1rem;
+}
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+h1 {
+  font-size: 2rem;
+  margin: 0;
+  letter-spacing: -0.04em;
+}
+h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+.eyebrow {
+  margin: 0 0 0.25rem;
+}
+.hint,
+footer,
+.timestamp {
+  color: #63756b;
+  font-size: 0.85rem;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.card,
+.controls {
+  background: white;
+  border: 1px solid #dce3de;
+  border-radius: 12px;
+  padding: 1.4rem;
+}
+.card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.card-title code {
+  font-size: 0.8rem;
+  color: #63756b;
+}
+.card-title a {
+  text-decoration: none;
+}
+.state {
+  display: inline-block;
+  background: #eef1ee;
+  border-radius: 20px;
+  padding: 0.25rem 0.75rem;
+  font-weight: 650;
+  font-size: 0.85rem;
+}
+.online {
+  color: #176445;
+  background: #e4f3e9;
+}
+.offline,
+.error {
+  color: #9f3030;
+  background: #fff0ee;
+}
+.error {
+  padding: 0.6rem;
+  border-radius: 6px;
+}
+dl {
+  margin: 1rem 0;
+}
+.status-row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 0.4rem 1rem;
+  font-size: 0.9rem;
+}
+dt {
+  color: #63756b;
+}
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.timestamp {
+  border-top: 1px solid #e8ede8;
+  padding-top: 0.8rem;
+  font-size: 0.75rem;
+}
+button,
+input {
+  font: inherit;
+  min-height: 44px;
+  border-radius: 7px;
+}
+button {
+  border: 1px solid #246d53;
+  background: #246d53;
+  color: white;
+  padding: 0.55rem 0.95rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+button:hover {
+  background: #19563f;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+button.secondary,
+[data-refresh],
+[data-screenshot] {
+  color: #246d53;
+  background: #f2f7f3;
+}
+:focus-visible {
+  outline: 3px solid #bc7820;
+  outline-offset: 3px;
+}
+input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #b9c7be;
+  padding: 0.55rem 0.7rem;
+  background: #fff;
+  color: #243732;
+}
+label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+}
+.actions,
+.input-row {
+  display: flex;
+  gap: 0.6rem;
+}
+.actions {
+  flex-wrap: wrap;
+}
+.input-row button {
+  flex-shrink: 0;
+}
+.settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.settings form > button,
+.settings input + label {
+  margin-top: 0.6rem;
+}
+.wide {
+  grid-column: 1 / -1;
+}
+.message {
+  padding: 0.8rem;
+  background: #f2f7f3;
+  border-radius: 7px;
+}
+.message.error {
+  background: #fff0ee;
+}
+.screenshot {
+  border-top: 1px solid #dce3de;
+  padding-top: 1.3rem;
+}
+.screenshot img {
+  max-width: 100%;
+  max-height: 75vh;
+  height: auto;
+  border: 1px solid #dce3de;
+  border-radius: 8px;
+}
+footer {
+  padding: 2rem 0;
+}
+@media (max-width: 600px) {
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .settings {
+    grid-template-columns: 1fr;
+  }
+  .lan {
+    display: none;
+  }
+  .card,
+  .controls {
+    padding: 1rem;
+  }
+  .input-row {
+    flex-wrap: wrap;
+  }
+  .input-row button {
+    width: 100%;
+  }
+}

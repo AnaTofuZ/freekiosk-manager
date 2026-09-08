@@ -1,0 +1,22 @@
+{
+  "name": "freekiosk-manager",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit && vite build && gofmt -w web/views/components.go",
+    "fmt": "oxfmt .",
+    "lint": "oxlint . --deny-warnings && tsc --noEmit"
+  },
+  "dependencies": {
+    "@barefootjs/client": "0.35.1"
+  },
+  "devDependencies": {
+    "@barefootjs/go-template": "0.35.1",
+    "@barefootjs/jsx": "0.35.1",
+    "@barefootjs/vite": "0.35.1",
+    "oxfmt": "0.67.0",
+    "oxlint": "1.82.0",
+    "typescript": "5.9.3",
+    "vite": "6.4.3"
+  }
+}

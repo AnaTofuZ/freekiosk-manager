@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": [
+    "web/templates/**",
+    "web/generated/**",
+    "web/static/generated/**",
+    "package-lock.json",
+    "result/**"
+  ]
+}

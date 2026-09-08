@@ -1,0 +1,4 @@
+{
+  "ignorePatterns": ["web/generated/**", "web/static/generated/**", "result/**"],
+  "categories": { "correctness": "error" }
+}

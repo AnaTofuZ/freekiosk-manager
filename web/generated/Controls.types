@@ -1,0 +1,61 @@
+package views
+
+import (
+	"math/rand"
+
+	bf "github.com/barefootjs/runtime/bf"
+)
+
+// ControlsInput is the user-facing input type.
+type ControlsInput struct {
+	ScopeID string // Optional: if empty, random ID is generated
+	BfParent string // Optional: parent scope id
+	BfMount string // Optional: slot id in parent
+	Text interface{}
+	DeviceID string
+}
+
+// ControlsProps is the props type for the Controls component.
+type ControlsProps struct {
+	ScopeID string `json:"-"`
+	BfIsRoot bool `json:"-"`
+	BfIsChild bool `json:"-"`
+	BfParent string `json:"-"`
+	BfMount string `json:"-"`
+	BfDataKey string `json:"-"`
+	Scripts *bf.ScriptCollector `json:"-"`
+	BfCallerProps map[string]interface{} `json:"-"`
+	Text interface{} `json:"text"`
+	DeviceID string `json:"deviceID"`
+	Busy bool `json:"-"`
+	Message interface{} `json:"-"`
+	Failed bool `json:"-"`
+	ImageURL string `json:"-"`
+	Captured string `json:"-"`
+}
+
+// NewControlsProps creates ControlsProps from ControlsInput.
+func NewControlsProps(in ControlsInput) ControlsProps {
+	scopeID := in.ScopeID
+	if scopeID == "" {
+		scopeID = "Controls_" + randomID(6)
+	}
+
+	bfCallerProps := map[string]interface{}{}
+	bfCallerProps["text"] = in.Text
+	bfCallerProps["deviceID"] = in.DeviceID
+
+	return ControlsProps{
+		ScopeID: scopeID,
+		BfParent: in.BfParent,
+		BfMount: in.BfMount,
+		BfCallerProps: bfCallerProps,
+		Text: in.Text,
+		DeviceID: in.DeviceID,
+		Busy: false,
+		Message: nil,
+		Failed: false,
+		ImageURL: "",
+		Captured: "",
+	}
+}
