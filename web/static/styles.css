@@ -184,6 +184,30 @@ label {
   font-size: 0.9rem;
   margin-bottom: 0.4rem;
 }
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  margin: 0;
+  cursor: pointer;
+}
+.switch input {
+  appearance: none;
+  width: 2.75rem;
+  min-height: 1.5rem;
+  padding: 0.1rem;
+  border-radius: 999px;
+  background: #b9c7be radial-gradient(circle, white 0 0.5rem, transparent 0.55rem) left center /
+    1.3rem 1.3rem no-repeat;
+  transition:
+    background-color 0.15s,
+    background-position 0.15s;
+}
+.switch input:checked {
+  background-color: #246d53;
+  background-position: right center;
+}
 .actions,
 .input-row {
   display: flex;

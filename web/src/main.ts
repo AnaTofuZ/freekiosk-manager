@@ -18,6 +18,12 @@ for (const card of document.querySelectorAll<HTMLElement>("[data-device]")) {
       const response = await request(`/fragments/devices/${id}/status?lang=${locale}`);
       // The fragment is a compiled BarefootJS template, escaped by Go on the server.
       status.innerHTML = await response.text();
+      if (document.querySelector(".controls")) {
+        const snapshot = await (await request(`/api/devices/${id}/status`)).json();
+        document.dispatchEvent(
+          new CustomEvent("device-status", { detail: { id, status: snapshot.status } }),
+        );
+      }
       card.querySelector("[data-poll-error]")?.remove();
     } catch {
       if (!card.querySelector("[data-poll-error]")) {
