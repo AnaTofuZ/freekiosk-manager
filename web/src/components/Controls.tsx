@@ -1,10 +1,19 @@
 "use client";
 
-import { createSignal, onCleanup } from "@barefootjs/client";
+import { createEffect, createSignal, onCleanup } from "@barefootjs/client";
 import { request } from "../http";
 import { locale, translate } from "../i18n";
 
-export function Controls(props: { text: Record<string, string>; deviceID: string }) {
+export function Controls(props: {
+  text: Record<string, string>;
+  deviceID: string;
+  status?: {
+    screen?: { on?: boolean; brightness?: number };
+    audio?: { volume?: number };
+    webview?: { currentUrl?: string };
+  };
+  onUpdated: () => void;
+}) {
   const [busy, setBusy] = createSignal(false);
   const [message, setMessage] = createSignal(props.text.Ready);
   const [failed, setFailed] = createSignal(false);
@@ -14,18 +23,15 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
   const [brightness, setBrightness] = createSignal(50);
   const [volume, setVolume] = createSignal(20);
   const [currentURL, setCurrentURL] = createSignal("");
-  const updateSettings = (event: Event) => {
-    if (!(event instanceof CustomEvent) || event.detail.id !== props.deviceID) return;
-    const status = event.detail.status;
+  createEffect(() => {
+    const status = props.status;
     if (typeof status?.screen?.on === "boolean") setScreenOn(status.screen.on);
     if (typeof status?.screen?.brightness === "number") setBrightness(status.screen.brightness);
     if (typeof status?.audio?.volume === "number") setVolume(status.audio.volume);
     if (typeof status?.webview?.currentUrl === "string") setCurrentURL(status.webview.currentUrl);
-  };
-  document.addEventListener("device-status", updateSettings);
+  });
   onCleanup(() => {
     if (imageURL()) URL.revokeObjectURL(imageURL());
-    document.removeEventListener("device-status", updateSettings);
   });
 
   const submit = async (event: Event) => {
@@ -47,10 +53,7 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
       });
       const data: { message: string } = await response.json();
       setMessage(translate(data.message));
-      window.setTimeout(
-        () => document.dispatchEvent(new CustomEvent("device-updated", { detail: props.deviceID })),
-        1000,
-      );
+      window.setTimeout(props.onUpdated, 1000);
     } catch (error) {
       setFailed(true);
       setMessage(error instanceof Error ? translate(error.message) : props.text.RequestFailed);
@@ -208,7 +211,7 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
         </form>
       </div>
       <p className={failed() ? "message error" : "message"} role="status" aria-live="polite">
-        {message()}
+        {message() || props.text.Ready}
       </p>
       <div className="screenshot">
         <div className="card-title">

@@ -224,9 +224,9 @@ Goのfmtはgolangci-lint経由でgofmt/goimportsに統一し、lintは標準lint
 
 ### BarefootJS / TypeScript
 
-画面の正本は`web/src/components/*.tsx`です。`Page`は一覧・詳細の構成、`Status`はstatus部分、`Controls`は操作フォーム・loading・結果・スクリーンショットを定義します。公式`@barefootjs/go-template/vite`を使い、TSXからテンプレート・Goの型・必要なclient JSを生成します。手書きのGoテンプレートは`web/templates/layout.gohtml`のdocument枠だけです。
+画面の正本は`web/src/components/*.tsx`です。`Page`は一覧・詳細の構成、`DeviceCard`はstatusのpollと表示、`Controls`は操作フォーム・loading・結果・スクリーンショットを定義します。公式`@barefootjs/go-template/vite`を使い、TSXからテンプレート・Goの型・必要なclient JSを生成します。手書きのGoテンプレートは`web/templates/layout.gohtml`のdocument枠だけです。
 
-BarefootJSを選んだ理由は、TSXで画面を定義しながらGo側でHTMLを返し、操作が必要な部分にだけsignalとイベント処理を持たせられるためです。SPA routerや大きなフロントエンドstoreはありません。`main.ts`はpollと、サーバーでrender/escapeしたStatus fragmentの差し替えだけを担当します。
+BarefootJSを選んだ理由は、TSXで画面を定義しながらGo側でHTMLを返し、操作が必要な部分にだけsignalとイベント処理を持たせられるためです。SPA router、global event bus、フロントエンドstoreはありません。`DeviceCard`はsignalから変更されたstatus DOMだけを更新します。
 
 公式案内は[barefootjs.dev](https://barefootjs.dev/)と[公式リポジトリ](https://github.com/piconic-ai/barefootjs)、[Go Template Adapter](https://github.com/piconic-ai/barefootjs/blob/main/docs/core/adapters/go-template-adapter.md)です。指定されたbarefootjs.comは確認時に名前解決できませんでした。
 

@@ -75,7 +75,6 @@ func New(cfg *config.Config, timeout time.Duration) (http.Handler, error) {
 		writeJSON(w, http.StatusOK, list)
 	})
 	mux.HandleFunc("GET /api/devices/{id}/status", s.status)
-	mux.HandleFunc("GET /fragments/devices/{id}/status", s.status)
 	mux.HandleFunc("GET /api/devices/{id}/screenshot", s.screenshot)
 	mux.HandleFunc("POST /api/devices/{id}/{action}", s.command)
 	static, err := fs.Sub(assets.Files, "static")
@@ -124,9 +123,10 @@ func (s *Server) render(w http.ResponseWriter, name string, data any) {
 func (s *Server) page(w http.ResponseWriter, r *http.Request) {
 	lang := language(r)
 	http.SetCookie(w, &http.Cookie{Name: "language", Value: lang, Path: "/", MaxAge: 31536000, HttpOnly: true, Secure: r.TLS != nil, SameSite: http.SameSiteLaxMode})
-	input := views.PageInput{Text: translations(lang), Title: translate(lang, "Devices"), Cards: []views.PageCardsItem{}}
+	input := views.PageInput{Text: translations(lang), Title: translate(lang, "Devices"), Cards: []views.PageCardsItem{}, DeviceCards: []views.DeviceCardInput{}}
 	for _, c := range s.cards() {
 		input.Cards = append(input.Cards, views.PageCardsItem{ID: c.ID, Name: c.Name})
+		input.DeviceCards = append(input.DeviceCards, views.DeviceCardInput{ID: c.ID, Name: c.Name, Text: input.Text})
 	}
 	if r.PathValue("id") != "" {
 		d := s.lookup(w, r)
@@ -136,6 +136,7 @@ func (s *Server) page(w http.ResponseWriter, r *http.Request) {
 		input.Title = d.name
 		input.DetailID = d.id
 		input.Cards = []views.PageCardsItem{{ID: d.id, Name: d.name}}
+		input.DeviceCards = []views.DeviceCardInput{{ID: d.id, Name: d.name, Text: input.Text, Controls: true}}
 	}
 	props := views.NewPageProps(input)
 	scripts := bf.NewScriptCollector()
@@ -175,11 +176,10 @@ func (s *Server) status(w http.ResponseWriter, r *http.Request) {
 		d.mu.Unlock()
 	}
 	snapshot := d.current()
-	if strings.HasPrefix(r.URL.Path, "/fragments/") {
-		s.render(w, "Status", statusProps(snapshot, language(r)))
-	} else {
-		writeJSON(w, http.StatusOK, snapshot)
-	}
+	writeJSON(w, http.StatusOK, struct {
+		Snapshot
+		View statusView `json:"view"`
+	}{snapshot, statusViewFor(snapshot, language(r))})
 }
 func (s *Server) command(w http.ResponseWriter, r *http.Request) {
 	d := s.lookup(w, r)

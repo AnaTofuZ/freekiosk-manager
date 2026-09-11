@@ -1,4 +1,4 @@
-import { Controls } from "./Controls";
+import { DeviceCard } from "./DeviceCard";
 
 export function Page(props: {
   text: Record<string, string>;
@@ -45,23 +45,15 @@ export function Page(props: {
         {props.detailID !== "" && <a href="/">{props.text.AllDevices}</a>}
         <div className="cards">
           {props.cards.map((card) => (
-            <article key={card.id} className="card" data-device={card.id}>
-              <div className="card-title">
-                <h2>
-                  <a href={`/devices/${card.id}`}>{card.name}</a>
-                </h2>
-                <code>{card.id}</code>
-              </div>
-              <section data-status="" aria-label={props.text.DeviceStatus}>
-                <p className="state">{props.text.WaitingForStatus}</p>
-              </section>
-              <button type="button" data-refresh="">
-                {props.text.StatusRefresh}
-              </button>
-            </article>
+            <DeviceCard
+              key={card.id}
+              id={card.id}
+              name={card.name}
+              text={props.text}
+              controls={props.detailID === card.id}
+            />
           ))}
         </div>
-        {props.detailID !== "" && <Controls deviceID={props.detailID} text={props.text} />}
         <footer>{props.text.FreeKioskLANManagementScreenshotsAreNeverPolled}</footer>
       </main>
     </div>

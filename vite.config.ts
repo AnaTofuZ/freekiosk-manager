@@ -7,7 +7,7 @@ export default defineConfig({
     outDir: "web/static/generated",
     target: "es2022",
     rollupOptions: {
-      input: { main: "web/src/main.ts" },
+      input: { main: "web/src/components/Page.tsx" },
       output: { entryFileNames: "[name].js" },
     },
   },

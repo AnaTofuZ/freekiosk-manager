@@ -66,7 +66,7 @@ func TestHandlers(t *testing.T) {
 		}
 		return w
 	}
-	for _, path := range []string{"/", "/devices/living", "/api/devices", "/static/generated/main.js", "/static/styles.css"} {
+	for _, path := range []string{"/", "/devices/living", "/api/devices", "/static/generated/web/src/components/Page.tsx.js", "/static/styles.css"} {
 		w := call("GET", path, "")
 		if w.Code != 200 {
 			t.Fatal(path, w.Code, w.Body.String())
@@ -80,9 +80,8 @@ func TestHandlers(t *testing.T) {
 	if json.Unmarshal(status.Body.Bytes(), &snap) != nil || !snap.Online || snap.LastSuccess == nil {
 		t.Fatal(status.Body.String())
 	}
-	fragment := call("GET", "/fragments/devices/living/status", "")
-	if strings.Contains(fragment.Body.String(), "<script>") || !strings.Contains(fragment.Body.String(), "85") {
-		t.Fatal("unsafe or missing status")
+	if strings.Contains(status.Body.String(), "<script>") || !strings.Contains(status.Body.String(), `"view"`) || !strings.Contains(status.Body.String(), "85") {
+		t.Fatal("unsafe or missing status view")
 	}
 	if calls.Load() != 1 {
 		t.Fatal("concurrent polls not cached")

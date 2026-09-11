@@ -299,14 +299,14 @@ or source-control check targets.
 ### BarefootJS and TypeScript
 
 `web/src/components/*.tsx` is the UI source of truth. Page defines the overview
-and detail layout; Status defines the status fragment; Controls defines forms,
-loading/results and screenshots. The official `@barefootjs/go-template/vite`
+and detail layout; DeviceCard owns status polling and rendering; Controls defines
+forms, loading/results and screenshots. The official `@barefootjs/go-template/vite`
 adapter generates Go templates, Go types and client JavaScript. The only
 handwritten Go template is the document shell in `web/templates/layout.gohtml`.
 
-BarefootJS lets us author TSX while Go renders the HTML, with signals/events only
-where interaction is needed. There is no SPA router or large frontend store.
-`main.ts` handles polling and replaces server-rendered, escaped Status fragments.
+BarefootJS lets us author TSX while Go renders the HTML, with signals and event
+handlers only where interaction is needed. There is no SPA router, global event
+bus or frontend store. DeviceCard updates only the affected status DOM from signals.
 
 See [barefootjs.dev](https://barefootjs.dev/), the
 [official repository](https://github.com/piconic-ai/barefootjs) and

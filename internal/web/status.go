@@ -3,30 +3,43 @@ package web
 import (
 	"fmt"
 	"time"
-
-	"github.com/AnaTofuZ/freekiosk-manager/web/views"
 )
 
-func statusProps(s Snapshot, lang string) views.StatusProps {
+type statusView struct {
+	State       string      `json:"state"`
+	StateClass  string      `json:"stateClass"`
+	Error       string      `json:"error"`
+	Stale       bool        `json:"stale"`
+	LastSuccess string      `json:"lastSuccess"`
+	LastAttempt string      `json:"lastAttempt"`
+	Rows        []statusRow `json:"rows"`
+}
+
+type statusRow struct {
+	Label string `json:"label"`
+	Value string `json:"value"`
+}
+
+func statusViewFor(s Snapshot, lang string) statusView {
 	clock := func(t *time.Time) string {
 		if t == nil {
 			return translate(lang, "Never")
 		}
 		return t.Format(time.RFC3339)
 	}
-	input := views.StatusInput{Text: translations(lang), State: "○ Waiting for status", LastSuccess: clock(s.LastSuccess), LastAttempt: clock(s.LastAttempt), Rows: []views.StatusRowsItem{}}
+	view := statusView{State: "○ Waiting for status", LastSuccess: clock(s.LastSuccess), LastAttempt: clock(s.LastAttempt), Rows: []statusRow{}}
 	if s.Online {
-		input.State = "● Online"
-		input.StateClass = "online"
+		view.State = "● Online"
+		view.StateClass = "online"
 	}
 	if s.Error != nil {
-		input.State = "● Error"
-		input.StateClass = "offline"
-		input.Error = s.Error.Message
-		input.Stale = s.Status != nil
+		view.State = "● Error"
+		view.StateClass = "offline"
+		view.Error = s.Error.Message
+		view.Stale = s.Status != nil
 		switch s.Error.Kind {
 		case "network", "timeout", "connection_refused":
-			input.State = "● Offline"
+			view.State = "● Offline"
 		}
 	}
 	add := func(label string, p any, suffix string) {
@@ -51,7 +64,7 @@ func statusProps(s Snapshot, lang string) views.StatusProps {
 				value = translate(lang, "Yes")
 			}
 		}
-		input.Rows = append(input.Rows, views.StatusRowsItem{Label: translate(lang, label), Value: fmt.Sprint(value) + suffix})
+		view.Rows = append(view.Rows, statusRow{Label: translate(lang, label), Value: fmt.Sprint(value) + suffix})
 	}
 	if d := s.Status; d != nil {
 		if d.Webview != nil {
@@ -80,7 +93,7 @@ func statusProps(s Snapshot, lang string) views.StatusProps {
 			add("Model", d.Device.Model, "")
 		}
 	}
-	input.State = translate(lang, input.State)
-	input.Error = translate(lang, input.Error)
-	return views.NewStatusProps(input)
+	view.State = translate(lang, view.State)
+	view.Error = translate(lang, view.Error)
+	return view
 }
