@@ -27,6 +27,15 @@
       },
       "screenOn": {
         "value": false
+      },
+      "brightness": {
+        "value": 50
+      },
+      "volume": {
+        "value": 20
+      },
+      "currentURL": {
+        "value": ""
       }
     }
   },

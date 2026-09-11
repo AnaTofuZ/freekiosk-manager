@@ -219,6 +219,14 @@ label {
 .input-row button {
   flex-shrink: 0;
 }
+.input-row input[type="range"] {
+  flex: 1;
+  padding: 0;
+  border: 0;
+}
+.input-row input[type="number"] {
+  width: 5.5rem;
+}
 .settings {
   display: grid;
   grid-template-columns: 1fr 1fr;

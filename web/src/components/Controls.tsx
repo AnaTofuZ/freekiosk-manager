@@ -11,15 +11,21 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
   const [imageURL, setImageURL] = createSignal("");
   const [captured, setCaptured] = createSignal("");
   const [screenOn, setScreenOn] = createSignal(false);
-  const updateScreen = (event: Event) => {
+  const [brightness, setBrightness] = createSignal(50);
+  const [volume, setVolume] = createSignal(20);
+  const [currentURL, setCurrentURL] = createSignal("");
+  const updateSettings = (event: Event) => {
     if (!(event instanceof CustomEvent) || event.detail.id !== props.deviceID) return;
-    const on = event.detail.status?.screen?.on;
-    if (typeof on === "boolean") setScreenOn(on);
+    const status = event.detail.status;
+    if (typeof status?.screen?.on === "boolean") setScreenOn(status.screen.on);
+    if (typeof status?.screen?.brightness === "number") setBrightness(status.screen.brightness);
+    if (typeof status?.audio?.volume === "number") setVolume(status.audio.volume);
+    if (typeof status?.webview?.currentUrl === "string") setCurrentURL(status.webview.currentUrl);
   };
-  document.addEventListener("device-status", updateScreen);
+  document.addEventListener("device-status", updateSettings);
   onCleanup(() => {
     if (imageURL()) URL.revokeObjectURL(imageURL());
-    document.removeEventListener("device-status", updateScreen);
+    document.removeEventListener("device-status", updateSettings);
   });
 
   const submit = async (event: Event) => {
@@ -109,13 +115,28 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
           <label for="brightness">{props.text.BrightnessLabel}</label>
           <div className="input-row">
             <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={brightness()}
+              aria-label={props.text.BrightnessLabel}
+              onInput={(event) =>
+                setBrightness((event.currentTarget as HTMLInputElement).valueAsNumber)
+              }
+            />
+            <input
               id="brightness"
               name="value"
               type="number"
               min="0"
               max="100"
               step="1"
-              value="50"
+              value={brightness()}
+              onInput={(event) => {
+                const value = (event.currentTarget as HTMLInputElement).valueAsNumber;
+                if (!Number.isNaN(value)) setBrightness(value);
+              }}
               required
             />
             <button disabled={busy()}>{props.text.SetBrightness}</button>
@@ -125,13 +146,28 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
           <label for="volume">{props.text.VolumeLabel}</label>
           <div className="input-row">
             <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={volume()}
+              aria-label={props.text.VolumeLabel}
+              onInput={(event) =>
+                setVolume((event.currentTarget as HTMLInputElement).valueAsNumber)
+              }
+            />
+            <input
               id="volume"
               name="value"
               type="number"
               min="0"
               max="100"
               step="1"
-              value="20"
+              value={volume()}
+              onInput={(event) => {
+                const value = (event.currentTarget as HTMLInputElement).valueAsNumber;
+                if (!Number.isNaN(value)) setVolume(value);
+              }}
               required
             />
             <button disabled={busy()}>{props.text.SetVolume}</button>
@@ -144,6 +180,7 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
               id="url"
               name="url"
               type="url"
+              value={currentURL()}
               placeholder="https://signage.home/"
               maxlength={8192}
               required

@@ -44,6 +44,9 @@ type ControlsProps struct {
 	ImageURL      string                 `json:"-"`
 	Captured      string                 `json:"-"`
 	ScreenOn      bool                   `json:"-"`
+	Brightness    int                    `json:"-"`
+	Volume        int                    `json:"-"`
+	CurrentURL    string                 `json:"-"`
 }
 
 // PageCardsItem is a synthesised type for an anonymous object type (#2674).
@@ -145,6 +148,9 @@ func NewControlsProps(in ControlsInput) ControlsProps {
 		ImageURL:      "",
 		Captured:      "",
 		ScreenOn:      false,
+		Brightness:    50,
+		Volume:        20,
+		CurrentURL:    "",
 	}
 }
 
