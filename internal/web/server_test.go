@@ -71,6 +71,9 @@ func TestHandlers(t *testing.T) {
 		if w.Code != 200 {
 			t.Fatal(path, w.Code, w.Body.String())
 		}
+		if path == "/devices/living" && !strings.Contains(w.Body.String(), `class="device"`) {
+			t.Fatal("device card has no hydratable root")
+		}
 	}
 	if calls.Load() != 0 {
 		t.Fatal("page render blocked on device")

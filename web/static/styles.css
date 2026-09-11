@@ -77,6 +77,9 @@ footer,
   gap: 1rem;
   margin: 1rem 0;
 }
+.device {
+  display: contents;
+}
 .card,
 .controls {
   background: white;

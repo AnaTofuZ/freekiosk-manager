@@ -70,7 +70,7 @@ export function DeviceCard(props: {
   });
 
   return (
-    <>
+    <div className="device">
       <article className="card">
         <div className="card-title">
           <h2>
@@ -104,6 +104,6 @@ export function DeviceCard(props: {
       {props.controls && (
         <Controls deviceID={props.id} text={props.text} status={status()} onUpdated={refresh} />
       )}
-    </>
+    </div>
   );
 }
