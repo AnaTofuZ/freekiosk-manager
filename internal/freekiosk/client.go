@@ -199,6 +199,8 @@ func (c *Client) Execute(ctx context.Context, action string, p Command) error {
 	var body any
 	switch action {
 	case "reload":
+	case "clear-cache":
+		path = "/api/clearCache"
 	case "screen":
 		if p.State != "on" && p.State != "off" {
 			return Invalid("Screen state must be on or off")

@@ -67,6 +67,7 @@ go build -o bin/freekioskd ./cmd/freekioskd
 freekioskctl devices
 freekioskctl status living
 freekioskctl reload living
+freekioskctl clear-cache living
 freekioskctl url living
 freekioskctl url living https://signage.home/
 freekioskctl screen living on
@@ -108,7 +109,7 @@ nix develop
 go run ./cmd/freekioskd -config ./freekiosk.json -listen 0.0.0.0:8080
 ```
 
-`http://server:8080/`で端末一覧、カードから詳細画面に移動します。Reload、screen on/off、brightness、volume、URL、toast、TTS、手動スクリーンショット取得に対応します。
+`http://server:8080/`で端末一覧、カードから詳細画面に移動します。Reload、cache clear、screen on/off、brightness、volume、URL、toast、TTS、手動スクリーンショット取得に対応します。
 
 statusは表示中のページから20秒間隔で取得します。非表示タブは次のpollを休止し、同一ブラウザではpollを重複させません。サーバーも同一端末への同時pollと3秒以内の再取得をまとめます。端末ごとに処理するため、offline端末が一覧ページの描画や他端末を待たせません。最後に成功したstatus・取得時刻と、最新の取得エラー・試行時刻を区別します。キャッシュはメモリのみで、サーバー再起動時に消えます。
 
@@ -134,18 +135,19 @@ WebView以外のアプリを撮影する場合、FreeKiosk v1.2.20以降ではAn
 
 2026-09-08に公式[REST API仕様](https://github.com/RushB-fr/freekiosk/blob/main/docs/rest-api.md)と[KioskHttpServer.kt](https://github.com/RushB-fr/freekiosk/blob/main/android/app/src/main/java/com/freekiosk/api/KioskHttpServer.kt)、[HttpServerModule.kt](https://github.com/RushB-fr/freekiosk/blob/main/android/app/src/main/java/com/freekiosk/api/HttpServerModule.kt)を確認しています。認証は全リクエストの`X-Api-Key`ヘッダーです。
 
-| 操作       | FreeKioskへのリクエスト       | body / response                                         |
-| ---------- | ----------------------------- | ------------------------------------------------------- |
-| Status     | `GET /api/status`             | `success`, `data`, `timestamp`のJSON envelope           |
-| 現在URL    | `GET /api/status`             | `data.webview.currentUrl`（`GET /api/url`は使いません） |
-| Reload     | `POST /api/reload`            | bodyなし                                                |
-| Screen     | `POST /api/screen/on` / `off` | bodyなし                                                |
-| Brightness | `POST /api/brightness`        | `{"value":30}`                                          |
-| Volume     | `POST /api/volume`            | `{"value":20}`                                          |
-| URL変更    | `POST /api/url`               | `{"url":"https://signage.home/"}`                       |
-| Screenshot | `GET /api/screenshot`         | `image/png`バイナリ                                     |
-| Toast      | `POST /api/toast`             | `{"text":"hello"}`                                      |
-| TTS        | `POST /api/tts`               | `{"text":"夕食","language":"ja"}`（languageは任意）     |
+| 操作        | FreeKioskへのリクエスト       | body / response                                         |
+| ----------- | ----------------------------- | ------------------------------------------------------- |
+| Status      | `GET /api/status`             | `success`, `data`, `timestamp`のJSON envelope           |
+| 現在URL     | `GET /api/status`             | `data.webview.currentUrl`（`GET /api/url`は使いません） |
+| Reload      | `POST /api/reload`            | bodyなし                                                |
+| Cache clear | `POST /api/clearCache`        | bodyなし                                                |
+| Screen      | `POST /api/screen/on` / `off` | bodyなし                                                |
+| Brightness  | `POST /api/brightness`        | `{"value":30}`                                          |
+| Volume      | `POST /api/volume`            | `{"value":20}`                                          |
+| URL変更     | `POST /api/url`               | `{"url":"https://signage.home/"}`                       |
+| Screenshot  | `GET /api/screenshot`         | `image/png`バイナリ                                     |
+| Toast       | `POST /api/toast`             | `{"text":"hello"}`                                      |
+| TTS         | `POST /api/tts`               | `{"text":"夕食","language":"ja"}`（languageは任意）     |
 
 操作結果はHTTP statusだけでなく`success`と`data.executed`も検証します。コマンド成功は端末側の受理・実行応答であり、WebViewのロード完了を意味しません。statusの未提供フィールドは表示しません。新しい未知フィールドは無視し、既知フィールドの型不正はinvalid responseに分類します。
 

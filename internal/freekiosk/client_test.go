@@ -25,6 +25,7 @@ func TestClient(t *testing.T) {
 	}{
 		{"status", "/api/status", "", Command{}},
 		{"reload", "/api/reload", "", Command{}},
+		{"clear-cache", "/api/clearCache", "", Command{}},
 		{"brightness", "/api/brightness", `{"value":30}`, Command{Value: new(30)}},
 		{"volume", "/api/volume", `{"value":20}`, Command{Value: new(20)}},
 		{"screen", "/api/screen/off", "", Command{State: "off"}},
