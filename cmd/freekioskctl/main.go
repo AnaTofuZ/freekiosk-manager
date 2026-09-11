@@ -46,6 +46,7 @@ func newCommand() *cobra.Command {
 	}{
 		{"status <device>", "Get device status", 1, 1},
 		{"reload <device>", "Reload the current page", 1, 1},
+		{"clear-cache <device>", "Clear WebView cache, cookies and storage", 1, 1},
 		{"url <device> [url]", "Get or change the current URL", 1, 2},
 		{"screen <device> <on|off>", "Turn the screen on or off", 2, 2},
 		{"brightness <device> <0-100>", "Change screen brightness", 2, 2},

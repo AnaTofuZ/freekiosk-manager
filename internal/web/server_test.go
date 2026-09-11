@@ -87,7 +87,7 @@ func TestHandlers(t *testing.T) {
 	if calls.Load() != 1 {
 		t.Fatal("concurrent polls not cached")
 	}
-	for _, tc := range []struct{ action, body string }{{"reload", "{}"}, {"screen", `{"state":"off"}`}, {"brightness", `{"value":30}`}, {"volume", `{"value":20}`}, {"url", `{"url":"https://signage.home/"}`}, {"toast", `{"text":"hello"}`}, {"tts", `{"text":"夕食","language":"ja"}`}} {
+	for _, tc := range []struct{ action, body string }{{"reload", "{}"}, {"clear-cache", "{}"}, {"screen", `{"state":"off"}`}, {"brightness", `{"value":30}`}, {"volume", `{"value":20}`}, {"url", `{"url":"https://signage.home/"}`}, {"toast", `{"text":"hello"}`}, {"tts", `{"text":"夕食","language":"ja"}`}} {
 		w := call("POST", "/api/devices/living/"+tc.action, tc.body)
 		if w.Code != 200 {
 			t.Fatal(tc.action, w.Body.String())

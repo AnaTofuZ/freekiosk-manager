@@ -73,6 +73,11 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
         <form data-action="reload">
           <button disabled={busy()}>{props.text.Reload}</button>
         </form>
+        <form data-action="clear-cache">
+          <button className="secondary" disabled={busy()}>
+            {props.text.ClearCache}
+          </button>
+        </form>
         <form data-action="screen">
           <input type="hidden" name="state" value="on" />
           <button disabled={busy()}>{props.text.ScreenON}</button>

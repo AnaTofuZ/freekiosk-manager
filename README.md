@@ -78,6 +78,7 @@ environment variables. Restart the server after changing configuration.
 freekioskctl devices
 freekioskctl status living
 freekioskctl reload living
+freekioskctl clear-cache living
 freekioskctl url living
 freekioskctl url living https://signage.home/
 freekioskctl screen living on
@@ -126,9 +127,9 @@ nix develop
 go run ./cmd/freekioskd -config ./freekiosk.json -listen 0.0.0.0:8080
 ```
 
-Open `http://server:8080/` and select a device to reload, turn its screen on/off,
-adjust brightness or volume, change its URL, send toast/TTS messages, or capture
-a screenshot.
+Open `http://server:8080/` and select a device to reload, clear its WebView cache,
+turn its screen on/off, adjust brightness or volume, change its URL, send toast/TTS
+messages, or capture a screenshot.
 
 Status refreshes every 20 seconds while the tab is visible. Polls do not overlap
 in one browser; the server also coalesces concurrent polls and requests within
@@ -183,6 +184,7 @@ Authentication uses the `X-Api-Key` header.
 | Status      | `GET /api/status`               | JSON envelope: `success`, `data`, `timestamp`        |
 | Current URL | `GET /api/status`               | `data.webview.currentUrl`; no `GET /api/url`         |
 | Reload      | `POST /api/reload`              | No body                                              |
+| Clear cache | `POST /api/clearCache`          | No body                                              |
 | Screen      | `POST /api/screen/on` or `/off` | No body                                              |
 | Brightness  | `POST /api/brightness`          | `{"value":30}`                                       |
 | Volume      | `POST /api/volume`              | `{"value":20}`                                       |
