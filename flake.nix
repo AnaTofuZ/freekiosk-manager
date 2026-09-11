@@ -1,20 +1,26 @@
 {
   description = "Lightweight FreeKiosk LAN manager and CLI";
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs.go-overlay.url = "github:purpleclay/go-overlay";
+  inputs.go-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, go-overlay }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
       eachSystem = nixpkgs.lib.genAttrs systems;
     in {
       packages = eachSystem (system:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
+          pkgs = import nixpkgs { inherit system; overlays = [ go-overlay.overlays.default ]; };
+          go = pkgs.go-bin.fromGoMod ./go.mod;
           src = pkgs.lib.cleanSourceWith {
             src = ./.;
             filter = path: type:
-              let name = baseNameOf path;
+              let
+                name = baseNameOf path;
+                relative = pkgs.lib.removePrefix (toString ./. + "/") (toString path);
               in !(builtins.elem name [ ".git" "node_modules" "result" "bin" ".cache" "freekiosk.json" ])
+                && !(builtins.elem relative [ "web/generated" "web/static/generated" "web/views/components.go" ])
                 && pkgs.lib.cleanSourceFilter path type;
           };
           frontend = pkgs.buildNpmPackage {
@@ -22,7 +28,7 @@
             version = "0.1.0";
             inherit src;
             npmDepsHash = "sha256-SSdqvySyOfy70ehVh6pTya80UsdKTl5/qmjoLn35ccw=";
-            nativeBuildInputs = [ pkgs.makeWrapper pkgs.go_1_27 ]
+            nativeBuildInputs = [ pkgs.makeWrapper ]
               ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.autoPatchelfHook ];
             buildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.stdenv.cc.cc.lib ];
             preBuild = pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
@@ -44,7 +50,7 @@
           };
         in {
           inherit frontend;
-          default = pkgs.buildGo127Module {
+          default = (pkgs.buildGoModule.override { inherit go; }) {
             pname = "freekiosk-manager";
             version = "0.1.0";
             inherit src;
@@ -72,9 +78,11 @@
           };
         });
       devShells = eachSystem (system:
-        let pkgs = nixpkgs.legacyPackages.${system};
+        let
+          pkgs = import nixpkgs { inherit system; overlays = [ go-overlay.overlays.default ]; };
+          go = pkgs.go-bin.fromGoMod ./go.mod;
         in { default = pkgs.mkShell {
-          packages = [ pkgs.go_1_27 pkgs.golangci-lint pkgs.nodejs self.packages.${system}.frontend ];
+          packages = [ go go.tools.golangci-lint.latest pkgs.djlint pkgs.nodejs self.packages.${system}.frontend ];
         }; });
       nixosModules.default = { config, lib, pkgs, ... }:
         let cfg = config.services.freekiosk-manager;

@@ -32,8 +32,8 @@ go build -o bin/freekioskctl ./cmd/freekioskctl
 go build -o bin/freekioskd ./cmd/freekioskd
 ```
 
-Generated assets are committed, so Go-only changes can use `go build ./...`
-directly. Rebuild assets after changing TSX, TypeScript or translations.
+BarefootJS output is not committed. Run `npm run build` before Go commands when
+working outside Nix; `nix build` generates and embeds it automatically.
 
 ## Configuration
 
@@ -257,10 +257,9 @@ DynamicUser. The service uses a read-only filesystem and restricted privileges.
 
 ## Development
 
-`nix develop` provides Go 1.27.1, golangci-lint 2.13.2, TypeScript, Node.js,
-oxfmt 0.67.0, oxlint 1.82.0 and Vite. Go, golangci-lint and Oxc versions were the
-latest stable releases on 2026-09-08. Lockfiles pin reproducible dependencies;
-check upstream releases and Go compatibility when updating.
+`nix develop` uses go-overlay to select the latest Go 1.27.x release from
+`go.mod` and its latest compatible golangci-lint. It also provides Node.js,
+Oxc, Vite and djLint. Lockfiles keep the environment reproducible.
 
 ```sh
 nix develop
@@ -269,14 +268,18 @@ npm ci
 # TSX → Go templates/types + browser JavaScript, including type checking
 npm run build
 
-# Format
+# Format locally
 golangci-lint fmt
 oxfmt .
+djlint web/templates -e gohtml --reformat
 
-# Lint
+# CI-equivalent checks
+golangci-lint fmt --diff
+oxfmt --check .
 golangci-lint run
-oxlint . --deny-warnings
 npm run lint
+djlint web/templates -e gohtml --check
+djlint web/templates -e gohtml --lint
 
 # Test and build
 go test ./...
@@ -287,11 +290,11 @@ nix build
 bash scripts/check.sh
 ```
 
-Go formatting uses gofmt/goimports through golangci-lint. The generated
-`components.go` is also gofmt-formatted during generation for reproducibility.
-Lint adds noctx/bodyclose/nilerr to the standard linters. Error classification
-uses `k1LoW/errors.As/Is`; new client errors use `WithStack`.
-Stack traces are never serialized to the Web API.
+Go formatting uses gofmt/goimports through golangci-lint. Lint adds
+noctx/bodyclose/nilerr to the standard linters. Oxfmt/oxlint check authored
+TypeScript and related frontend sources; djLint checks the handwritten Go HTML
+template. Generated files are built before Go lint/tests but are not formatting
+or source-control check targets.
 
 ### BarefootJS and TypeScript
 
@@ -318,6 +321,7 @@ so `go.mod` uses a `replace` directive. React is not a dependency:
 
 Oxfmt formats authored TS/TSX, CSS, JSON and Markdown. Oxlint checks TS/TSX;
 `tsc --noEmit` checks types. Oxlint is not an HTML/CSS linter.
+djLint formats and lints the handwritten Go template in `web/templates/`.
 Handwritten Go templates and generated outputs are excluded from oxfmt to avoid
 damaging Go template syntax. The corresponding UI markup is formatted in TSX.
 

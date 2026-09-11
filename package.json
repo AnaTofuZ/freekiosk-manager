@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc --noEmit && vite build && gofmt -w web/views/components.go",
+    "build": "tsc --noEmit && vite build",
     "fmt": "oxfmt .",
+    "fmt:check": "oxfmt --check .",
     "lint": "oxlint . --deny-warnings && tsc --noEmit"
   },
   "dependencies": {

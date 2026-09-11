@@ -3,3 +3,6 @@
 /bin/
 /freekiosk.json
 /.cache/
+/web/generated/
+/web/static/generated/
+/web/views/components.go
