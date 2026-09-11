@@ -78,7 +78,8 @@ footer,
   margin: 1rem 0;
 }
 .device {
-  display: contents;
+  display: grid;
+  gap: 1rem;
 }
 .card,
 .controls {
