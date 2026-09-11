@@ -132,6 +132,8 @@ turn its screen on/off, adjust brightness or volume, change its URL, send toast/
 messages, or capture a screenshot.
 
 The screen power toggle follows the current status reported by the device.
+Current brightness, volume and URL values populate the controls after the first
+status refresh. Brightness and volume sliders stay synchronized with their number inputs.
 
 Status refreshes every 20 seconds while the tab is visible. Polls do not overlap
 in one browser; the server also coalesces concurrent polls and requests within

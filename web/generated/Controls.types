@@ -33,6 +33,9 @@ type ControlsProps struct {
 	ImageURL string `json:"-"`
 	Captured string `json:"-"`
 	ScreenOn bool `json:"-"`
+	Brightness int `json:"-"`
+	Volume int `json:"-"`
+	CurrentURL string `json:"-"`
 }
 
 // NewControlsProps creates ControlsProps from ControlsInput.
@@ -59,5 +62,8 @@ func NewControlsProps(in ControlsInput) ControlsProps {
 		ImageURL: "",
 		Captured: "",
 		ScreenOn: false,
+		Brightness: 50,
+		Volume: 20,
+		CurrentURL: "",
 	}
 }
