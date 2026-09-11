@@ -27,7 +27,7 @@ go build -o bin/freekioskctl ./cmd/freekioskctl
 go build -o bin/freekioskd ./cmd/freekioskd
 ```
 
-生成物はリポジトリに含めます。Goだけの変更であれば`go build ./...`を直接実行できます。TSX/TypeScript/CSSを変更した場合は先に`npm run build`してください。
+BarefootJSの生成物はリポジトリに含めません。Nix外で作業する場合はGoコマンドの前に`npm run build`を実行してください。`nix build`では自動生成してバイナリへ埋め込みます。
 
 ## 設定
 
@@ -189,7 +189,7 @@ API keyはバックエンドだけで利用し、HTML・JS・device一覧には�
 
 ## 開発
 
-`nix develop`にGo 1.27.1、golangci-lint 2.13.2、TypeScript compiler、Node.js、oxfmt 0.67.0、oxlint 1.82.0、Viteが入ります。Go・golangci-lint・Oxcは2026-09-08時点の最新安定版です。再現可能にするためflake.lockとpackage-lock.jsonを固定し、更新時は公式releaseとGo対応を確認してください。
+`nix develop`はgo-overlayを使い、`go.mod`に対応する最新のGo 1.27.xと、そのtoolchainに対応する最新のgolangci-lintを提供します。Node.js、Oxc、Vite、djLintも含み、lockfileで環境を再現します。
 
 ```sh
 nix develop
@@ -198,14 +198,18 @@ npm ci
 # TSX → Go templates/types + browser JS、型チェック
 npm run build
 
-# format
+# ローカルでformat
 golangci-lint fmt
 oxfmt .
+djlint web/templates -e gohtml --reformat
 
-# lint
+# CI相当のcheck
+golangci-lint fmt --diff
+oxfmt --check .
 golangci-lint run
-oxlint . --deny-warnings
 npm run lint
+djlint web/templates -e gohtml --check
+djlint web/templates -e gohtml --lint
 
 # test / build
 go test ./...
@@ -216,7 +220,7 @@ nix build
 bash scripts/check.sh
 ```
 
-Goのfmtはgolangci-lint経由でgofmt/goimportsに統一します。コード生成時の`components.go`だけは`npm run build`内でgofmtして再現性を保ちます。lintは標準lintersにnoctx/bodyclose/nilerrを追加しています。エラー分類は`k1LoW/errors.As/Is`、clientの新規エラーには`WithStack`を使用します。スタックをWebへserializeしません。
+Goのfmtはgolangci-lint経由でgofmt/goimportsに統一し、lintは標準lintersにnoctx/bodyclose/nilerrを追加します。手書きのTypeScriptと関連frontend sourceはoxfmt/oxlint、Go HTML templateはdjLintで検査します。生成物はGoのlint/test前に作成しますが、formatやGit管理の検査対象にはしません。
 
 ### BarefootJS / TypeScript
 
@@ -228,11 +232,11 @@ BarefootJSを選んだ理由は、TSXで画面を定義しながらGo側でHTML�
 
 BarefootJS 0.35.1はalphaでAPI変更の可能性があるため、パッケージとGo runtimeのコミットを固定しています。compilerのpeer dependencyに合わせTypeScript 5.9.3・Vite 6.4.3を使用します。Go runtimeはnpmパッケージに含まれず、upstreamのモジュール宣言名とリポジトリ配置が異なるため、go.modの`replace`で公式monorepoのruntimeを指定しています。Reactは依存に含みません（tsconfigの`react-jsx`はTSXの型チェック方式の名前です）。
 
-oxfmtは手書きTS/TSX/CSS/JSON/Markdownを整形します。oxlintはTS/TSXのlint、`tsc --noEmit`は型チェックを担当します。oxlintはHTML/CSSのlinterではありません。Goテンプレート構文を壊さないよう`web/templates/`と生成物はoxfmtから除外します。画面のHTMLに相当する部分は元のTSX側で整形します。
+oxfmtは手書きTS/TSX/CSS/JSON/Markdownを整形します。oxlintはTS/TSXのlint、`tsc --noEmit`は型チェックを担当します。Go template構文を含む`web/templates/`はdjLintでformat/lintします。生成物はこれらの検査から除外します。
 
 翻訳辞書は `web/locales/en.json` と `web/locales/ja.json` です。同じキーで翻訳を追加し、TSXでは `props.text` を参照します。辞書はGoとTypeScriptで共有し、追加のi18nライブラリは使用しません。変更後は `npm run build` してください。
 
-生成先は`web/generated/`（テンプレート）、`web/views/components.go`（型）、`web/static/generated/`（JS）です。生成物を直接編集せず、TSXを修正して再ビルドしてください。
+生成先は`web/generated/`（テンプレート）、`web/views/components.go`（型）、`web/static/generated/`（JS）です。すべてGit管理外のため、TSXを修正して再ビルドしてください。
 
 ### 実機なしの確認
 

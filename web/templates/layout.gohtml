@@ -1,5 +1,14 @@
-{{define "layout"}}<!doctype html>
-<html lang="{{.Language}}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{.Title}} · FreeKiosk manager</title><link rel="stylesheet" href="/static/styles.css">
-<script type="module" src="/static/generated/main.js"></script></head>
-<body>{{.Content}}{{.Scripts}}</body></html>{{end}}
+{{define "layout"}}<!DOCTYPE html>
+    <html lang="{{.Language}}">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta name="description"
+                  content="Manage FreeKiosk devices on a local network">
+            <title>{{.Title}} · FreeKiosk manager</title>
+            <link rel="stylesheet" href="/static/styles.css">
+            <script type="module" src="/static/generated/main.js"></script>
+        </head>
+        <body>{{.Content}}{{.Scripts}}</body>
+    </html>
+{{end}}
