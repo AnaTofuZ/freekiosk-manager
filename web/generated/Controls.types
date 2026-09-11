@@ -32,6 +32,7 @@ type ControlsProps struct {
 	Failed bool `json:"-"`
 	ImageURL string `json:"-"`
 	Captured string `json:"-"`
+	ScreenOn bool `json:"-"`
 }
 
 // NewControlsProps creates ControlsProps from ControlsInput.
@@ -57,5 +58,6 @@ func NewControlsProps(in ControlsInput) ControlsProps {
 		Failed: false,
 		ImageURL: "",
 		Captured: "",
+		ScreenOn: false,
 	}
 }

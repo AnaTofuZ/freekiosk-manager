@@ -1,6 +1,6 @@
 {
-  "_i18n-BNRSDDhp.js": {
-    "file": "assets/i18n-BNRSDDhp.js",
+  "_i18n-VihybWQ6.js": {
+    "file": "assets/i18n-VihybWQ6.js",
     "name": "i18n"
   },
   "web/src/components/Controls.tsx": {
@@ -9,7 +9,7 @@
     "src": "web/src/components/Controls.tsx",
     "isEntry": true,
     "imports": [
-      "_i18n-BNRSDDhp.js"
+      "_i18n-VihybWQ6.js"
     ]
   },
   "web/src/components/Page.tsx": {
@@ -19,7 +19,7 @@
     "isEntry": true,
     "imports": [
       "web/src/components/Controls.tsx",
-      "_i18n-BNRSDDhp.js"
+      "_i18n-VihybWQ6.js"
     ]
   },
   "web/src/main.ts": {
@@ -28,7 +28,7 @@
     "src": "web/src/main.ts",
     "isEntry": true,
     "imports": [
-      "_i18n-BNRSDDhp.js"
+      "_i18n-VihybWQ6.js"
     ]
   }
 }

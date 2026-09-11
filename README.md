@@ -131,6 +131,8 @@ Open `http://server:8080/` and select a device to reload, clear its WebView cach
 turn its screen on/off, adjust brightness or volume, change its URL, send toast/TTS
 messages, or capture a screenshot.
 
+The screen power toggle follows the current status reported by the device.
+
 Status refreshes every 20 seconds while the tab is visible. Polls do not overlap
 in one browser; the server also coalesces concurrent polls and requests within
 three seconds for each tablet. Offline devices do not block page rendering or

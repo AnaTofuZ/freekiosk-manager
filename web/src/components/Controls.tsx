@@ -10,8 +10,16 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
   const [failed, setFailed] = createSignal(false);
   const [imageURL, setImageURL] = createSignal("");
   const [captured, setCaptured] = createSignal("");
+  const [screenOn, setScreenOn] = createSignal(false);
+  const updateScreen = (event: Event) => {
+    if (!(event instanceof CustomEvent) || event.detail.id !== props.deviceID) return;
+    const on = event.detail.status?.screen?.on;
+    if (typeof on === "boolean") setScreenOn(on);
+  };
+  document.addEventListener("device-status", updateScreen);
   onCleanup(() => {
     if (imageURL()) URL.revokeObjectURL(imageURL());
+    document.removeEventListener("device-status", updateScreen);
   });
 
   const submit = async (event: Event) => {
@@ -25,6 +33,7 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
       const body: Record<string, string | number> = {};
       for (const [key, value] of new FormData(form))
         body[key] = key === "value" ? Number(value) : String(value);
+      if (form.dataset.action === "screen") body.state = screenOn() ? "on" : "off";
       const response = await request(`/api/devices/${props.deviceID}/${form.dataset.action}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,14 +88,20 @@ export function Controls(props: { text: Record<string, string>; deviceID: string
           </button>
         </form>
         <form data-action="screen">
-          <input type="hidden" name="state" value="on" />
-          <button disabled={busy()}>{props.text.ScreenON}</button>
-        </form>
-        <form data-action="screen">
-          <input type="hidden" name="state" value="off" />
-          <button className="secondary" disabled={busy()}>
-            {props.text.ScreenOFF}
-          </button>
+          <label className="switch">
+            <input
+              type="checkbox"
+              role="switch"
+              checked={screenOn()}
+              disabled={busy()}
+              onChange={(event) => {
+                const input = event.currentTarget as HTMLInputElement;
+                setScreenOn(input.checked);
+                input.form?.requestSubmit();
+              }}
+            />
+            <span>{props.text.ScreenPower}</span>
+          </label>
         </form>
       </div>
       <div className="settings">
