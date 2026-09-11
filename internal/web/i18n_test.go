@@ -34,8 +34,8 @@ func TestLanguages(t *testing.T) {
 		{"/devices/living", "ja", "画面電源", "ja"},
 		{"/devices/living?lang=en", "ja", "Screen power", "en"},
 		{"/?lang=unsupported", "", "Devices", "en"},
-		{"/fragments/devices/living/status?lang=ja", "", "バッテリー", ""},
-		{"/fragments/devices/living/status?lang=en", "ja", "Battery", ""},
+		{"/api/devices/living/status?lang=ja", "", "バッテリー", ""},
+		{"/api/devices/living/status?lang=en", "ja", "Battery", ""},
 	} {
 		r := httptest.NewRequestWithContext(t.Context(), "GET", tc.path, nil)
 		if tc.cookie != "" {
